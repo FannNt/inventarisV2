@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('uuid',10)->unique();
             $table->string('no_seri')->nullable();
             $table->string('name');
-            $table->foreignId('id_ruangan')->references('id')->on('ruangans')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('id_item_status')->references('id')->on('item_statuses')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('merk');
-            $table->string('type');
+            $table->foreignId('ruangan_id')->references('id')->on('ruangans')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('merk')->nullable();
+            $table->string('type')->nullable();
             $table->year('tahun_pengadaan')->nullable();
+            $table->timestamp('expired_at');
             $table->timestamps();
         });
     }

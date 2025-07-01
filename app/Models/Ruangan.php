@@ -11,4 +11,9 @@ class Ruangan extends Model
 
     protected $guarded = [];
 
+    public function item()
+    {
+        return $this->hasMany(Item::class,'ruangan_id');
+    }
+
 }

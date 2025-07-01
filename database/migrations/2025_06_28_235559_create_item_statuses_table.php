@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('item_statuses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
             $table->string('condition');
             $table->string('keterangan')->nullable();
             $table->timestamps();

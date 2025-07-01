@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('configures', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_item')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
-            $table->date('masa_berlaku');
+            $table->foreignId('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
+            $table->timestamp('expired_at');
             $table->string('lab_name');
-            $table->timestamps();
+            $table->timestamp('calibrate_at')->default(now());
         });
     }
 
