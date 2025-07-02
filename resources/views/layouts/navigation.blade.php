@@ -4,7 +4,7 @@
             <!-- Logo -->
             <div class="flex items-center space-x-4">
                 <a href="{{ route('dashboard') }}" wire:navigate>
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-14">
+                    <img src="{{ asset('image/logo.png') }}" alt="Logo" class="h-14">
                 </a>
             </div>
 
