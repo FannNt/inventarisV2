@@ -21,15 +21,13 @@ class StatOverviewWidget extends BaseWidget
         $validCount = $this->getValidItemsCount();
         $totalCount = Item::count();
 
-        $expiredTrend = $this->getExpiredItemsTrend();
-        $expiringSoonTrend = $this->getExpiringSoonTrend();
 
         return [
             // Critical - Expired Items
-            $this->createExpiredStat($expiredCount, $expiredTrend),
+            $this->createExpiredStat($expiredCount),
 
             // Warning - Expiring Soon
-            $this->createExpiringSoonStat($expiringSoonCount, $expiringSoonTrend),
+            $this->createExpiringSoonStat($expiringSoonCount),
 
             // Success - Valid Items
             $this->createValidStat($validCount),
@@ -39,16 +37,12 @@ class StatOverviewWidget extends BaseWidget
         ];
     }
 
-    private function createExpiredStat(int $count, array $trend): Stat
+    private function createExpiredStat(int $count): Stat
     {
-        $percentageChange = $this->calculatePercentageChange($trend);
-
         return Stat::make('Expired', $count)
-            ->description($this->getExpiredDescription($count, $percentageChange))
-            ->descriptionIcon($percentageChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+            ->description($this->getExpiredDescription($count))
             ->icon('heroicon-o-x-circle')
             ->color('danger')
-            ->chart($trend)
             ->url($this->getFilteredUrl('expired'))
             ->extraAttributes([
                 'class' => 'cursor-pointer transition-all duration-200 hover:scale-105',
@@ -56,16 +50,13 @@ class StatOverviewWidget extends BaseWidget
             ]);
     }
 
-    private function createExpiringSoonStat(int $count, array $trend): Stat
+    private function createExpiringSoonStat(int $count): Stat
     {
-        $percentageChange = $this->calculatePercentageChange($trend);
 
         return Stat::make('Expiring Soon', $count)
-            ->description($this->getExpiringSoonDescription($count, $percentageChange))
-            ->descriptionIcon($percentageChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
+            ->description($this->getExpiringSoonDescription($count))
             ->icon('heroicon-o-clock')
             ->color('warning')
-            ->chart($trend)
             ->url($this->getFilteredUrl('expiring_soon'))
             ->extraAttributes([
                 'class' => 'cursor-pointer transition-all duration-200 hover:scale-105',
@@ -148,37 +139,6 @@ class StatOverviewWidget extends BaseWidget
 
     }
 
-    private function getExpiredItemsTrend(): array
-    {
-        // Get NEW items that expired each day in the last 7 days
-        $trend = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->startOfDay();
-            $nextDate = $date->copy()->addDay();
-
-            // Count items that expired on this specific date
-            $count = Item::whereNotNull('latestCalibration')
-                ->whereBetween('expired_at', [$date, $nextDate])
-                ->count();
-
-            $trend[] = $count;
-        }
-
-        return $trend;
-    }
-
-    private function getExpiringSoonTrend(): array
-    {
-        $trend = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i);
-            $count = Item::whereNotNull('latestCalibration')
-                ->whereBetween('expired_at', [$date, $date->copy()->addMonths(3)])
-                ->count();
-            $trend[] = $count;
-        }
-        return $trend;
-    }
 
     private function calculatePercentageChange(array $trend): float
     {
@@ -196,31 +156,22 @@ class StatOverviewWidget extends BaseWidget
         return round((($recentSum - $previousSum) / $previousSum) * 100, 1);
     }
 
-    private function getExpiredDescription(int $count, float $change): string
+    private function getExpiredDescription(int $count): string
     {
         if ($count === 0) return 'No expired items! 🎉';
 
         $urgency = $count > 10 ? 'Critical attention needed' : 'Needs attention';
 
-        if ($change > 0) {
-            $trend = "↑{$change}% more expirations";
-        } elseif ($change < 0) {
-            $trend = "↓" . abs($change) . "% fewer expirations";
-        } else {
-            $trend = 'Stable this week';
-        }
-
-        return "{$urgency} • {$trend}";
+        return "{$urgency}";
     }
 
-    private function getExpiringSoonDescription(int $count, float $change): string
+    private function getExpiringSoonDescription(int $count): string
     {
         if ($count === 0) return 'No items expiring soon';
 
         $timeframe = 'Next 3 months';
-        $trend = $change > 0 ? "↑{$change}% trending up" : ($change < 0 ? "↓" . abs($change) . "% trending down" : 'Stable trend');
 
-        return "{$timeframe} • {$trend}";
+        return "{$timeframe}";
     }
 
     private function getFilteredUrl(string $filter): string
