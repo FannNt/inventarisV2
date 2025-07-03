@@ -10,12 +10,28 @@
 
             <!-- Desktop Nav -->
             <div class="hidden sm:flex space-x-10">
+
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                     Dashboard
                 </x-nav-link>
+                @if(auth()->user()->hasRole('car-management'))
+                    <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                        Mobil
+                    </x-nav-link>
+                @endif
                 <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
                     Items
                 </x-nav-link>
+                @auth()
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-nav-link :href="route('logout')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                            {{ __('Log Out') }}
+                        </x-nav-link>
+                    </form>
+                @endauth
             </div>
 
             <!-- Hamburger Icon -->
@@ -40,6 +56,16 @@
             <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
                 Items
             </x-nav-link>
+            @auth()
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <x-nav-link :href="route('logout')"
+                                onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                        {{ __('Log Out') }}
+                    </x-nav-link>
+                </form>
+            @endauth
         </div>
     </div>
 </nav>
