@@ -15,15 +15,16 @@
                     Dashboard
                 </x-nav-link>
                 @auth()
-                @if(auth()->user()->hasRole('cars_management'))
-                    <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
-                        Mobil
-                    </x-nav-link>
-                @elseif(auth()->user()->hasRole('items_management'))
-                    <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
-                        Items
-                    </x-nav-link>
-                @endif
+                    @if(auth()->user()->hasAnyRole(['cars_management','admin','superadmin']))
+                        <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                            Mobil
+                        </x-nav-link>
+                    @endif
+                    @if(auth()->user()->hasAnyRole(['items_management','admin','superadmin']))
+                        <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                            Items
+                        </x-nav-link>
+                    @endif
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-nav-link :href="route('logout')"
@@ -36,7 +37,8 @@
                 @guest()
                     <x-nav-link :href="route('register')" :active="request()->routeIs('register')" wire:navigate>
                         Register
-                    </x-nav-link>@endguest
+                    </x-nav-link>
+                @endguest
             </div>
 
             <!-- Hamburger Icon -->
@@ -58,10 +60,18 @@
             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 Dashboard
             </x-nav-link>
-            <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
-                Items
-            </x-nav-link>
             @auth()
+                @if(auth()->user()->hasAnyRole(['admin','superadmin','items_management']))
+                    <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                        Items
+                    </x-nav-link>
+                @endif
+                @if(auth()->user()->hasAnyRole(['admin','superadmin','cars_management']))
+                        <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                            Mobil
+                        </x-nav-link>
+                @endif
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-nav-link :href="route('logout')"
@@ -71,6 +81,11 @@
                     </x-nav-link>
                 </form>
             @endauth
+            @guest()
+                <x-nav-link :href="route('register')" :active="request()->routeIs('register')" wire:navigate>
+                    Register
+                </x-nav-link>
+            @endguest
         </div>
     </div>
 </nav>

@@ -19,6 +19,6 @@ class UserHasNoRole
             return $next($request);
         }
 
-        abort(403,'Already have role');
+        return redirect(route('dashboard'))->with('Already have role');
     }
 }

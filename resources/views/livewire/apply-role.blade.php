@@ -35,7 +35,7 @@
             <div>
                 <h3 class="text-lg font-semibold text-gray-800">Item Management</h3>
                 <p class="text-sm text-gray-600 mt-2">
-                    Manage inventory, calibrations, and logistics.
+                    Manage inventory and  calibrations.
                 </p>
             </div>
             <button wire:click="apply('items_management')"
