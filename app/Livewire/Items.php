@@ -87,8 +87,8 @@ class Items extends Component
             case 'expired':
                 $query->where(function ($q) use ($now) {
                     $q->whereHas('latestCalibration', function ($sub) use ($now) {
-                        $sub->whereNotNull('expires_at')
-                            ->where('expires_at', '<', $now);
+                        $sub->whereNotNull('expired_at')
+                            ->where('expired_at', '<', $now);
                     })->orWhere(function ($sub) use ($now) {
                         $sub->whereNull('expired_at')->whereDoesntHave('latestCalibration');
                     })->orWhere(function ($sub) use ($now) {
@@ -100,7 +100,7 @@ class Items extends Component
             case 'expiring_soon':
                 $query->where(function ($q) use ($now, $soon) {
                     $q->whereHas('latestCalibration', function ($sub) use ($now, $soon) {
-                        $sub->whereBetween('expires_at', [$now, $soon]);
+                        $sub->whereBetween('expired_at', [$now, $soon]);
                     })->orWhere(function ($sub) use ($now, $soon) {
                         $sub->whereBetween('expired_at', [$now, $soon])->whereDoesntHave('latestCalibration');
                     });
@@ -110,7 +110,7 @@ class Items extends Component
             case 'valid':
                 $query->where(function ($q) use ($soon) {
                     $q->whereHas('latestCalibration', function ($sub) use ($soon) {
-                        $sub->where('expires_at', '>', $soon);
+                        $sub->where('expired_at', '>', $soon);
                     })->orWhere(function ($sub) use ($soon) {
                         $sub->where(function ($inner) use ($soon) {
                             $inner->whereNull('expired_at')
