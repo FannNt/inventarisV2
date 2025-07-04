@@ -24,8 +24,8 @@ class ConfigureHistory extends Component
     public function render()
     {
         $configs = Configure::where('item_id', $this->itemId)
-            ->latest('calibrated_at')
-            ->get();
+            ->latest('calibrate_at')
+            ->paginate($this->perPage);
 
         return view('livewire.configure-history', [
             'configs' => $configs
