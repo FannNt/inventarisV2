@@ -14,15 +14,16 @@
                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                     Dashboard
                 </x-nav-link>
-                @if(auth()->user()->hasRole('car-management'))
+                @auth()
+                @if(auth()->user()->hasRole('cars_management'))
                     <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
                         Mobil
                     </x-nav-link>
+                @elseif(auth()->user()->hasRole('items_management'))
+                    <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                        Items
+                    </x-nav-link>
                 @endif
-                <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
-                    Items
-                </x-nav-link>
-                @auth()
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-nav-link :href="route('logout')"
@@ -32,6 +33,10 @@
                         </x-nav-link>
                     </form>
                 @endauth
+                @guest()
+                    <x-nav-link :href="route('register')" :active="request()->routeIs('register')" wire:navigate>
+                        Register
+                    </x-nav-link>@endguest
             </div>
 
             <!-- Hamburger Icon -->
