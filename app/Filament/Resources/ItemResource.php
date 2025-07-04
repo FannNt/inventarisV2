@@ -125,17 +125,32 @@ class ItemResource extends Resource
                         $status = $data['value'];
 
                         return match ($status) {
-                            'expired' => $query->whereHas('latestCalibration', function ($q) {
-                                $q->whereNotNull('expired_at')->where('expired_at', '<', now());
+                            'expired' => $query->where(function ($q) {
+                                $q->whereHas('latestCalibration', function ($sub) {
+                                    $sub->whereNotNull('expired_at')
+                                        ->where('expired_at', '<', now());
+                                })->orWhere(function ($sub) {
+                                    $sub->whereNull('expired_at')->whereDoesntHave('latestCalibration');
+                                })->orWhere(function ($sub) {
+                                    $sub->where('expired_at', '<', now())->whereDoesntHave('latestCalibration');
+                                });
                             }),
-                            'expiring_soon' => $query->whereHas('latestCalibration', function ($q) {
-                                $q->whereBetween('expired_at', [now(), now()->addMonths(3)]);
+                            'expiring_soon' => $query->where(function ($q) {
+                                $q->whereHas('latestCalibration', function ($sub) {
+                                    $sub->whereBetween('expired_at', [now(), now()->addMonths(3)]);
+                                })->orWhere(function ($sub) {
+                                    $sub->whereBetween('expired_at', [now(), now()->addMonths(3)])->whereDoesntHave('latestCalibration');
+                                });
                             }),
                             'valid' => $query->where(function ($q) {
-                                $q->whereDoesntHave('latestCalibration')
-                                    ->orWhereHas('latestCalibration', function ($q2) {
-                                        $q2->where('expired_at', '>', now()->addMonths(3));
-                                    });
+                                $q->whereHas('latestCalibration', function ($sub) {
+                                    $sub->where('expired_at', '>', now()->addMonths(3));
+                                })->orWhere(function ($sub) {
+                                    $sub->where(function ($inner) {
+                                        $inner->whereNull('expired_at')
+                                            ->orWhere('expired_at', '>', now()->addMonths(3));
+                                    })->whereDoesntHave('latestCalibration');
+                                });
                             }),
                             default => $query,
                         };
