@@ -22,7 +22,7 @@ class AcceptAdminResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole('superadmin');
+        return auth()->check() && auth()->user()?->hasRole('superadmin');
     }
 
     public static function form(Form $form): Form

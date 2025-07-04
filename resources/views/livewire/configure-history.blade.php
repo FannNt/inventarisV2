@@ -11,12 +11,4 @@
         @endforeach
     </div>
 
-    @if ($configs->hasMorePages())
-        <div
-            x-intersect="$wire.loadMore()"
-            class="text-center text-sm text-gray-500 py-4"
-        >
-            Loading more...
-        </div>
-    @endif
 </div>
