@@ -23,6 +23,11 @@ class ItemResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasAnyRole(['admin','superadmin','items_management']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form

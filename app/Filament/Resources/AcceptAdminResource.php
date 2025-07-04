@@ -20,6 +20,11 @@ class AcceptAdminResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasRole('superadmin');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

@@ -3,8 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoomResource\Pages;
-use App\Filament\Resources\RoomResource\RelationManagers;
-use App\Models\Room;
 use App\Models\Ruangan;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -20,6 +18,10 @@ class RoomResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasAnyRole(['admin','superadmin','items_management']);
+    }
     public static function form(Form $form): Form
     {
         return $form

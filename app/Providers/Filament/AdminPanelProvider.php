@@ -55,7 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                RoleMiddleware::class . ':admin|superadmin'
+                RoleMiddleware::class . ':admin|superadmin|items_management|cars_management'
             ]);
     }
 }
