@@ -12,15 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
-            $table->id();
-            $table->string('uuid',10)->unique();
+            $table->string('id',10)->primary();
             $table->string('no_seri')->nullable();
             $table->string('name');
+            $table->integer('jumlah')->default(1);
             $table->foreignId('ruangan_id')->references('id')->on('ruangans')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('merk')->nullable();
+            $table->foreignId('merk_id')->references('id')->on('merks')->onDelete('cascade')->onUpdate('cascade');
             $table->string('type')->nullable();
             $table->year('tahun_pengadaan')->nullable();
-            $table->timestamp('expired_at');
             $table->timestamps();
         });
     }
