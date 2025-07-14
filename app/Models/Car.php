@@ -28,8 +28,9 @@ class Car extends Model
 
     public function gatNeedServiceAttribute()
     {
-        $latestService= $this->getCurrentServiceAttribute;
+        $latestService= $this?->current_service;
         $expired =  Carbon::parse($latestService)->addMonths(6);
         return $expired;
     }
+
 }

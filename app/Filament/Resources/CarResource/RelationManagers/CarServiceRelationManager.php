@@ -198,7 +198,7 @@ class CarServiceRelationManager extends RelationManager
                                                 ->label('Car')
                                                 ->formatStateUsing(fn ($record) => $record->car->name . ' ' . $record->car->type . ' - ' . $record->car->nopol)
                                                 ->icon('heroicon-o-truck'),
-                                            TextEntry::make('kategori')
+                                            TextEntry::make('kategori.name')
                                                 ->label('Category')
                                                 ->badge()
                                                 ->color('primary')

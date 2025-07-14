@@ -16,7 +16,7 @@
                 </x-nav-link>
                 @auth()
                     @if(auth()->user()->hasAnyRole(['cars_management','admin','superadmin']))
-                        <x-nav-link :href="route('items')" :active="request()->routeIs('items')" wire:navigate>
+                        <x-nav-link :href="route('cars')" :active="request()->routeIs('cars')" wire:navigate>
                             Mobil
                         </x-nav-link>
                     @endif

@@ -23,6 +23,14 @@ class CarResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required(),
+                Forms\Components\FileUpload::make('image')
+                    ->image()
+                    ->directory('cars')
+                    ->visibility('private')
+                    ->downloadable()
+                    ->previewable()
+                    ->reorderable()
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('nopol')
                     ->required()
                     ->unique(ignoreRecord: true),
