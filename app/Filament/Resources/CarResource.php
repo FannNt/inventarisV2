@@ -94,6 +94,12 @@ class CarResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('barcode')
+                    ->label('Barcode')
+                    ->icon('heroicon-o-qr-code')
+                    ->url(fn (Car $record) => route('cars.barcode.download', $record->id))
+                    ->openUrlInNewTab()
+                    ->tooltip('Download barcode'),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
