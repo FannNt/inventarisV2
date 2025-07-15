@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('item_inventaris', function (Blueprint $table) {
             $table->string('id',10)->primary();
-            $table->foreignId('ruangan_id')->references('id')->on('ruangans')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('ruangan_id');
+            $table->foreign('ruangan_id')->references('id')->on('ruangans')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('item_id');
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('items_status_id')->references('id')->on('item_statuses')->onUpdate('cascade')->onDelete('cascade');
             $table->enum('asal_barang',['Beli','Bantuan','Hibah']);
             $table->date('tgl_pengadaan');

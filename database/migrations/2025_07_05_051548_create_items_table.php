@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('no_seri')->nullable();
             $table->string('name');
             $table->integer('jumlah')->default(1);
-            $table->foreignId('merk_id')->references('id')->on('merks')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('merk_id');
+            $table->foreign('merk_id')->references('id')->on('merks')->onDelete('cascade');
             $table->string('type')->nullable();
             $table->year('tahun_pengadaan')->nullable();
             $table->timestamps();
