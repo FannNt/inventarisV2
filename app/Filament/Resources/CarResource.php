@@ -43,7 +43,6 @@ class CarResource extends Resource
                 Forms\Components\TextInput::make('type')
                     ->required(),
                 Forms\Components\TextInput::make('odometer')
-                    ->required()
                     ->numeric(),
                 Forms\Components\DatePicker::make('tanggal_pajak')
                     ->required(),
@@ -63,15 +62,18 @@ class CarResource extends Resource
                     )->searchable()
                     ->label('Tahun Perakitan')
                     ->required(),
-                Forms\Components\TextInput::make('bahan_bakar'),
-                Forms\Components\TextInput::make('warna'),
+                Forms\Components\TextInput::make('bahan_bakar')
+                    ->required(),
+                Forms\Components\TextInput::make('warna')
+                    ->required(),
                 Forms\Components\TextInput::make('atas_nama')
                     ->required(),
                 Forms\Components\Select::make('fungsi')
                     ->options([
                         'ambulance' => 'Ambulance',
                         'pribadi' => 'Pribadi'
-                    ]),
+                    ])
+                    ->required(),
 
             ])->columns(1);
     }
