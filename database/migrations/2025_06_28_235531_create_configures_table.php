@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('configures', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('id',10)->primary();
+            $table->foreignId('item_id')->references('id')->on('item_inventaris')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamp('expired_at');
             $table->string('lab_name');
             $table->timestamp('calibrate_at')->default(now());
