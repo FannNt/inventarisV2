@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('total');
             $table->foreignId('kategori_id')->references('id')->on('car_services_categories')->onUpdate('cascade')->onDelete('cascade');
             $table->string('bengkel')->nullable();
-            $table->json('image')->nullable();
+            $table->string('image')->nullable();
             $table->string('keterangan')->nullable();
             $table->timestamp('service_at') ;
         });
