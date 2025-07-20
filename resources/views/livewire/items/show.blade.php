@@ -77,31 +77,31 @@
                     <!-- Item ID -->
                     <div class="px-6 py-4 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-600">Item ID</span>
-                        <span class="text-sm font-mono text-gray-900 bg-gray-50 px-3 py-1 rounded">{{ $item->uuid }}</span>
+                        <span class="text-sm font-mono text-gray-900 bg-gray-50 px-3 py-1 rounded">{{ $item->id }}</span>
                     </div>
 
                     <!-- Name -->
                     <div class="px-6 py-4 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-600">Name</span>
-                        <span class="text-sm text-gray-900 font-medium">{{ $item->name }}</span>
+                        <span class="text-sm text-gray-900 font-medium">{{ $item->item->name }}</span>
                     </div>
 
                     <!-- Brand -->
                     <div class="px-6 py-4 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-600">Brand</span>
-                        <span class="text-sm text-gray-900">{{ $item->merk }}</span>
+                        <span class="text-sm text-gray-900">{{ $item->item->merk->name }}</span>
                     </div>
 
                     <!-- Serial Number -->
                     <div class="px-6 py-4 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-600">Serial Number</span>
-                        <span class="text-sm font-mono text-gray-900 bg-gray-50 px-3 py-1 rounded">{{ $item->no_seri }}</span>
+                        <span class="text-sm font-mono text-gray-900 bg-gray-50 px-3 py-1 rounded">{{ $item->item->no_seri }}</span>
                     </div>
 
                     <!-- Year of Procurement -->
                     <div class="px-6 py-4 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-600">Year of Procurement</span>
-                        <span class="text-sm text-gray-900">{{ $item->tahun_pengadaan }}</span>
+                        <span class="text-sm text-gray-900">{{ $item->tgl_pengadaan }}</span>
                     </div>
 
                     <!-- Validity Period -->
@@ -150,5 +150,23 @@
                 </div>
             </div>
         </div>
+        @auth()
+            @if(auth()->user()->hasAnyRole(['admin','superadmin','items_management']))
+                <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-lg border border-gray-200 p-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-sm">📊</span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <a href="{{url("/admin/items/$item->id/edit")}}" class="text-sm font-medium text-gray-600">Edit Data</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endauth
     </div>
 </x-app-layout>

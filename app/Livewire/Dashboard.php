@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Item;
 use App\Models\Car; // Assuming you have a Car model
+use App\Models\ItemInventaris;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -55,7 +56,7 @@ class Dashboard extends Component
 
     public function updateItemsStats()
     {
-        $items = Item::with('latestCalibration')->get();
+        $items = ItemInventaris::with('latestCalibration')->get();
         $this->totalItems = $items->count();
 
         $now = now();

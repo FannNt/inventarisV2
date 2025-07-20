@@ -40,71 +40,10 @@ class Item extends Model
             }
         });
     }
-    public function isExpired()
+
+    public function merk()
     {
-        if (!$this->current_expired()) {
-            return false;
-        }
-        return Carbon::parse($this->current_expired())->lt(now());
-    }
-
-    public function isExpiringSoon()
-    {
-        if (!$this->current_expired()) {
-            return false;
-        }
-        $expiryDate = Carbon::parse($this->current_expired());
-        return !$this->isExpired() && $expiryDate->lt(now()->addMonths(3));
-    }
-
-    public function isValid()
-    {
-        if (!$this->current_expired()) {
-            return true;
-        }
-        return Carbon::parse($this->current_expired())->gt(now()->addMonths(3));
-    }
-
-    public function getExpirationStatus()
-    {
-        if ($this->isExpired()) {
-            return 'expired';
-        } elseif ($this->isExpiringSoon()) {
-            return 'expiring_soon';
-        } else {
-            return 'valid';
-        }
-    }
-
-    public function getExpirationCardClass()
-    {
-        if (!$this->current_expired()) {
-            return 'border-gray-200';
-        }
-
-        return match($this->getExpirationStatus()) {
-            'expired' => 'border-red-200 bg-red-50',
-            'expiring_soon' => 'border-yellow-200 bg-yellow-50',
-            'valid' => 'border-green-200 bg-green-50',
-        };
-    }
-
-    public function getExpirationTextClass()
-    {
-        if (!$this->current_expired()) {
-            return 'text-gray-900';
-        }
-
-        return match($this->getExpirationStatus()) {
-            'expired' => 'text-red-600 font-medium',
-            'expiring_soon' => 'text-yellow-600 font-medium',
-            'valid' => 'text-green-600 font-medium',
-        };
-    }
-    public function ruangan()
-    {
-
-        return $this->belongsTo(Ruangan::class, 'ruangan_id');
+        return $this->belongsTo(Merk::class);
     }
 
     public function configure()
@@ -112,23 +51,10 @@ class Item extends Model
         return $this->hasMany(Configure::class, 'item_id');
     }
 
-    public function latestCalibration()
-    {
-        return $this->hasOne(Configure::class)->latestOfMany('calibrate_at');
-    }
 
-    public function getCurrentExpiredAttribute()
-    {
-        return $this->latestCalibration?->expired_at ?? $this->expired_at;
-    }
 
-    public function status()
+    public function itemInventaris()
     {
-        return $this->hasOne(ItemStatus::class,'item_id');
-    }
-
-    public function getConditionAttribute()
-    {
-        return $this->status?->condition;
+        return $this->hasMany(ItemInventaris::class);
     }
 }

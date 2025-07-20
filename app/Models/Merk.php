@@ -34,4 +34,9 @@ class Merk extends Model
             }
         });
     }
+
+    public function item()
+    {
+        return $this->hasMany(Item::class);
+    }
 }

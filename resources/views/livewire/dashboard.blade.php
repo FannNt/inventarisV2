@@ -77,7 +77,7 @@
                                 <div class="p-4 max-h-64 overflow-y-auto">
                                     @foreach($expiredItems->take(5) as $item)
                                         <div class="mb-3 last:mb-0 bg-white p-3 rounded shadow">
-                                            <h4 class="font-semibold">{{ $item->name }}</h4>
+                                            <h4 class="font-semibold">{{ $item->item->name }}</h4>
                                             <p class="text-sm text-red-600">
                                                 Expired: {{ \Carbon\Carbon::parse($item->current_expired)->format('d M Y') }}
                                             </p>
@@ -103,7 +103,7 @@
                                 <div class="p-4 max-h-64 overflow-y-auto">
                                     @foreach($expiringSoonItems->take(5) as $item)
                                         <div class="mb-3 last:mb-0 bg-white p-3 rounded shadow">
-                                            <h4 class="font-semibold">{{ $item->name }}</h4>
+                                            <h4 class="font-semibold">{{ $item->item->name }}</h4>
                                             <p class="text-sm text-yellow-600">
                                                 Expires: {{ \Carbon\Carbon::parse($item->current_expired)->format('d M Y') }}
                                             </p>
@@ -129,7 +129,7 @@
                                 <div class="p-4 max-h-64 overflow-y-auto">
                                     @foreach($validItems->take(5) as $item)
                                         <div class="mb-3 last:mb-0 bg-gray-50 p-3 rounded shadow">
-                                            <h4 class="font-semibold">{{ $item->name }}</h4>
+                                            <h4 class="font-semibold">{{ $item->item->name }}</h4>
                                             @if($item->current_expired)
                                                 <p class="text-sm text-gray-600">
                                                     Expires: {{ \Carbon\Carbon::parse($item->current_expired)->format('d M Y') }}

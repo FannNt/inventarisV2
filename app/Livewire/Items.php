@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Configure;
 use App\Models\Item;
+use App\Models\ItemInventaris;
 use App\Models\Ruangan;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -66,9 +67,11 @@ class Items extends Component
 
     public function render()
     {
-        $query = Item::query()
+        $query = ItemInventaris::query()
             ->when($this->search, function($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
+                $query->whereHas('item', function ($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%');
+                });
             })
             ->when($this->ruangan_filter, function($query) {
                 $query->where('ruangan_id', 'like', $this->ruangan_filter );

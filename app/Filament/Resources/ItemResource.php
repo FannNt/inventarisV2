@@ -4,12 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CalibrationRelationManagerResource\RelationManagers\CalibrationRelationManager;
 use App\Filament\Resources\ItemResource\Pages;
-use App\Filament\Resources\ItemResource\RelationManagers;
 use App\Models\Item;
+use App\Models\ItemInventaris;
+use App\Models\ItemStatus;
 use App\Models\Ruangan;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ItemResource extends Resource
 {
-    protected static ?string $model = Item::class;
+    protected static ?string $model = ItemInventaris::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -32,47 +34,77 @@ class ItemResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('uuid')
-                    ->label('id')
-                    ->required()
-                    ->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('no_seri')
-                    ->label('No.Seri')
-                    ->required()
-                    ->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('name')
+                Select::make('item_id')
+                    ->relationship('item','name')
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('no_seri')
+                            ->label('No.Seri')
+                            ->required()
+                            ->unique(ignoreRecord: true),
+                        Forms\Components\TextInput::make('name')
+                            ->required(),
+                        Forms\Components\Select::make('merk_id')
+                            ->relationship('merk','name')
+                            ->label('Merk')
+                            ->searchable()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->label('New Merk')
+                                    ->unique('merks','name')
+                            ])
+                            ->required(),
+
+                        Forms\Components\TextInput::make('jumlah')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\Select::make('tahun_pengadaan')
+                            ->options(
+                                collect(range(now()->year, now()->year - 30))
+                                    ->mapWithKeys(fn($year) => [$year => $year])
+                                    ->toArray()
+                            )
+                            ->label('Tahun Pengadaan')
+                            ->required(),
+                    ])
+                    ->searchable()
+                    ->preload()
                     ->required(),
-                Forms\Components\Select::make('ruangan_id')
-                    ->options(function (){
-                    return Ruangan::all()->pluck('name', 'id');
-                })
-                    ->label('Ruangan')
-                    ->required(),
-                Forms\Components\Group::make()->relationship(
-                    'status',
-                    condition: fn(?array $state): bool => filled($state['condition']),
-                )->schema([
-                    Forms\Components\Select::make('condition')
-                        ->options([
-                            'baik' => 'Baik',
-                            'rusak' => 'Rusak',
-                        ])
-                        ->required()
-                ]),
-                Forms\Components\TextInput::make('merk'),
-                Forms\Components\TextInput::make('type'),
-                Forms\Components\Select::make('tahun_pengadaan')
-                    ->options(
-                        collect(range(now()->year, now()->year - 30))
-                            ->mapWithKeys(fn($year) => [$year => $year])
-                            ->toArray()
-                    )
-                    ->label('Tahun Pengadaan')
-                    ->required(),
-                Forms\Components\DatePicker::make('expired_at')
-                    ->label('Masa Berlaku')
+                Select::make('ruangan_id')
+                    ->relationship('ruangan', 'name')
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->unique('ruangans','name'),
+                    ])
                     ->required()
-                    ->visible(fn(string $context) => $context === 'create')
+                    ->searchable(),
+                Select::make('condition')
+                    ->label('Condition')
+                    ->options([
+                        'baik' => 'Baik',
+                        'rusak' => 'Rusak',
+                    ])
+                    ->required(),
+                Select::make('asal_barang')
+                    ->options([
+                        'Beli' => 'Beli',
+                        'Bantuan' => 'Bantuan',
+                        'Hibah' => 'Hibah'
+                    ])
+                    ->required(),
+                Forms\Components\DatePicker::make('tgl_pengadaan')
+                    ->required(),
+                TextInput::make('harga')
+                    ->required()
+                    ->numeric(),
+                TextInput::make('no_rak')
+                    ->required()
+                    ->numeric(),
+                TextInput::make('no_box')
+                    ->required()
+                    ->numeric(),
             ])->columns(1);
     }
 
@@ -80,81 +112,16 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('ruangan.name')
-                    ->label('Ruangan'),
-                Tables\Columns\TextColumn::make('status.condition')
-                    ->label('Kondisi'),
-                Tables\Columns\TextColumn::make('current_expired')
-                    ->label('Masa Berlaku')
-                    ->date('d M Y')
-                    ->color(function (Item $record): string {
-                        if (!$record->current_expired) {
-                            return 'gray';
-                        }
-
-                        $today = now();
-                        $threeMonthsFromNow = now()->addMonths(3);
-                        $expiryDate = Carbon::parse($record->current_expired);
-
-                        if ($expiryDate->lt($today)) {
-                            return 'danger';
-                        } elseif ($expiryDate->lt($threeMonthsFromNow)) {
-                            return 'warning';
-                        } else {
-                            return 'success';
-                        }
-                    }),
-
-
+                Tables\Columns\TextColumn::make('item.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('ruangan.name'),
+                Tables\Columns\TextColumn::make('item.merk.name')
+                    ->sortable()
+                    ->label('Merk'),
+                Tables\Columns\TextColumn::make('tgl_pengadaan')
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('ruangan_id')
-                    ->label('Ruangan')
-                    ->options(function (){
-                        return Ruangan::all()->pluck('name', 'id');
-                    }),
-                Tables\Filters\SelectFilter::make('expiration_status')
-                    ->label('Expiration Status')
-                    ->options([
-                        'expired' => 'Expired',
-                        'expiring_soon' => 'Expiring Soon',
-                        'valid' => 'Valid',
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        $status = $data['value'];
 
-                        return match ($status) {
-                            'expired' => $query->where(function ($q) {
-                                $q->whereHas('latestCalibration', function ($sub) {
-                                    $sub->whereNotNull('expired_at')
-                                        ->where('expired_at', '<', now());
-                                })->orWhere(function ($sub) {
-                                    $sub->whereNull('expired_at')->whereDoesntHave('latestCalibration');
-                                })->orWhere(function ($sub) {
-                                    $sub->where('expired_at', '<', now())->whereDoesntHave('latestCalibration');
-                                });
-                            }),
-                            'expiring_soon' => $query->where(function ($q) {
-                                $q->whereHas('latestCalibration', function ($sub) {
-                                    $sub->whereBetween('expired_at', [now(), now()->addMonths(3)]);
-                                })->orWhere(function ($sub) {
-                                    $sub->whereBetween('expired_at', [now(), now()->addMonths(3)])->whereDoesntHave('latestCalibration');
-                                });
-                            }),
-                            'valid' => $query->where(function ($q) {
-                                $q->whereHas('latestCalibration', function ($sub) {
-                                    $sub->where('expired_at', '>', now()->addMonths(3));
-                                })->orWhere(function ($sub) {
-                                    $sub->where(function ($inner) {
-                                        $inner->whereNull('expired_at')
-                                            ->orWhere('expired_at', '>', now()->addMonths(3));
-                                    })->whereDoesntHave('latestCalibration');
-                                });
-                            }),
-                            default => $query,
-                        };
-                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -172,7 +139,6 @@ class ItemResource extends Resource
             CalibrationRelationManager::class
         ];
     }
-
     public static function getPages(): array
     {
         return [

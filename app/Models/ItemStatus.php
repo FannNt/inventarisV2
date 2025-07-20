@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ItemStatus extends Model
 {
     use HasFactory;
+
     protected $guarded = [];
 
-    public function item()
+    public function itemInventaris()
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->hasOne(ItemInventaris::class, 'items_status_id');
     }
 }

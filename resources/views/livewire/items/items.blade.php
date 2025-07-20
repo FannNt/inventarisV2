@@ -136,7 +136,7 @@
                         <!-- Equipment Name -->
                         <div class="mb-5 pr-28">
                             <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
-                                {{ $item->name }}
+                                {{ $item->item->name }}
                             </h3>
                         </div>
 
@@ -183,7 +183,7 @@
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm text-gray-500 font-medium">Serial Number</p>
-                                    <p class="text-gray-900 font-medium font-mono text-sm">{{ $item->no_seri ?: 'Not available' }}</p>
+                                    <p class="text-gray-900 font-medium font-mono text-sm">{{ $item->item->no_seri ?: 'Not available' }}</p>
                                 </div>
                             </div>
                         </div>

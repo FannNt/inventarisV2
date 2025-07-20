@@ -37,9 +37,9 @@ class Ruangan extends Model
             }
         });
     }
-    public function item()
+    public function itemInventaris()
     {
-        return $this->hasMany(Item::class,'ruangan_id');
+        return $this->hasMany(ItemInventaris::class);
     }
 
 }
