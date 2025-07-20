@@ -90,8 +90,6 @@ class Items extends Component
                     $q->whereHas('latestCalibration', function ($sub) use ($now) {
                         $sub->whereNotNull('expired_at')
                             ->where('expired_at', '<', $now);
-                    })->orWhere(function ($sub) use ($now) {
-                        $sub->whereNull('expired_at')->whereDoesntHave('latestCalibration');
                     });
                 });
                 break;
