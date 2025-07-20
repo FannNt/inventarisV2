@@ -2,8 +2,6 @@
 
 namespace App\Livewire;
 
-use App\Models\Configure;
-use App\Models\Item;
 use App\Models\ItemInventaris;
 use App\Models\Ruangan;
 use Carbon\Carbon;
@@ -94,8 +92,6 @@ class Items extends Component
                             ->where('expired_at', '<', $now);
                     })->orWhere(function ($sub) use ($now) {
                         $sub->whereNull('expired_at')->whereDoesntHave('latestCalibration');
-                    })->orWhere(function ($sub) use ($now) {
-                        $sub->where('expired_at', '<', $now)->whereDoesntHave('latestCalibration');
                     });
                 });
                 break;
@@ -104,8 +100,6 @@ class Items extends Component
                 $query->where(function ($q) use ($now, $soon) {
                     $q->whereHas('latestCalibration', function ($sub) use ($now, $soon) {
                         $sub->whereBetween('expired_at', [$now, $soon]);
-                    })->orWhere(function ($sub) use ($now, $soon) {
-                        $sub->whereBetween('expired_at', [$now, $soon])->whereDoesntHave('latestCalibration');
                     });
                 });
                 break;
@@ -114,11 +108,6 @@ class Items extends Component
                 $query->where(function ($q) use ($soon) {
                     $q->whereHas('latestCalibration', function ($sub) use ($soon) {
                         $sub->where('expired_at', '>', $soon);
-                    })->orWhere(function ($sub) use ($soon) {
-                        $sub->where(function ($inner) use ($soon) {
-                            $inner->whereNull('expired_at')
-                                ->orWhere('expired_at', '>', $soon);
-                        })->whereDoesntHave('latestCalibration');
                     });
                 });
                 break;

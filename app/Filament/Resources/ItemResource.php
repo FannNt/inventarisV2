@@ -47,6 +47,7 @@ class ItemResource extends Resource
                             ->relationship('merk','name')
                             ->label('Merk')
                             ->searchable()
+                            ->preload()
                             ->createOptionForm([
                                 TextInput::make('name')
                                     ->required()
